@@ -1,0 +1,60 @@
+window.DEBUG_MODE ?= <%= Rails.env.development? %>
+window.TEST_MODE ?= <%= Rails.env.test? %>
+window.LOG_TODO ?= DEBUG_MODE
+
+window.cout = =>
+  args = _.toArray(arguments)
+  method = if args[0] in ['log', 'info', 'warn', 'error', 'assert', 'clear'] then args.shift() else 'log'
+  if DEBUG_MODE and console?
+    method = console[method]
+    if method.apply?
+      method.apply(console, args)
+    else
+      method(args)
+  args[0]
+
+window._cout = ->
+  console.log(arguments)  if console?
+  arguments[0]
+
+window.todo = (subject, location = null, numberOrString = null) =>
+  if LOG_TODO
+    cout 'warn', "TODO: #{subject}#{if location then " ### #{location}" else ''}#{if numberOrString then (if _.isNumber(numberOrString) then ":#{numberOrString}" else " > #{numberOrString}") else ''}"
+
+window.getParams = (searchString = location.search) ->
+  q = searchString.replace(/^\?/, '').split('&')
+  r = {}
+  for e in q
+    t = e.split('=')
+    r[decodeURIComponent(t[0])] = decodeURIComponent(t[1])
+  r
+
+window.waitFor = (delay, times, check, success, fail) ->
+  startWaitFor = ->
+    setTimeout ( ->
+      times--
+      if check()
+        success?(times)
+      else if times > 0
+        startWaitFor()
+      else
+        fail?()
+    ), delay
+  startWaitFor()
+
+window.prepareFilterParams = (serializedArray) ->
+  filteredParams = _.filter(serializedArray, (param) -> param.name isnt 'utf8' and param.value isnt '')
+  params = []
+  names = []
+  for param in filteredParams
+    index = if /\[\]$/.test(param.name) then -1 else _.indexOf(names, param.name)
+    if index < 0
+      names.push param.name
+      params.push param
+    else
+      params[index] = param
+  params.sort (a, b) ->
+    if a.name is b.name
+      if a.value >= b.value then 1 else -1
+    else
+      if a.name > b.name then 1 else -1
