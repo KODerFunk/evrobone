@@ -1,5 +1,7 @@
 # Evrobone
 
+[![Gem Version](https://badge.fury.io/rb/evrobone.svg)](http://badge.fury.io/rb/evrobone)
+
 Light-weight client-side framework based on Backbone.js for Ruby on Rails Front-end
 
 ## Installation
