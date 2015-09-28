@@ -25,7 +25,7 @@ Evrobone.AppMixins.WindowNavigation =
     if Turbolinks?
       $document = $(document)
       scrollTop = 0
-      $document.once 'page:before-unload.refreshPage', =>
+      $document.one 'page:before-unload.refreshPage', =>
         scrollTop = @$window.scrollTop()
         return
       $document.on 'page:load.refreshPage page:restore.refreshPage', =>
