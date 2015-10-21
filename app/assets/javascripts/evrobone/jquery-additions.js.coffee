@@ -71,7 +71,7 @@ do ($ = jQuery) =>
       callback $(element)
 
   $.fn.closestScrollable = ->
-    $(_.find(@parents().get(), (p) -> $(p).css('overflowY') is 'auto') or window)
+    $(_.find(@.get().concat(@parents().get()), (p) -> $(p).css('overflowY') is 'auto') or window)
 
 # RESEARCH
 #  $.fn.blockHide = ->
