@@ -8,7 +8,7 @@ Evrobone.AppMixins.ViewsManagement =
   Views: {}
 
   warnOnMultibind: true
-  preventMultibind: false
+  preventMultibind: true
   groupBindingLog: true
 
   viewInstances: null
@@ -62,7 +62,7 @@ Evrobone.AppMixins.ViewsManagement =
       if l > 0
         if @warnOnMultibind
           cout 'warn', @_plurMessage('Element already has bound %count% view%s%', l), element, viewClass, views
-        not @preventMultibind
+        not ( @preventMultibind and _.findWhere(views, constructor: viewClass) )
       else
         true
     else
