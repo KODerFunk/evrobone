@@ -6,9 +6,10 @@ class Evrobone.View extends Backbone.View
 
   @mixinNames: null
 
-  constructor: (options) ->
-    @reflectOptions options
+  setElement: ->
     super
+    @reflectOptions()
+    @
 
   reflectOptions: (options = @$el.data()) ->
     @[attr] = value  for attr, value of options  when not _.isUndefined(@[attr])

@@ -24,7 +24,7 @@ Evrobone.AppMixins.ViewsManagement =
     @performancePoint('Bound %count% view%s%', boundViews.length) if @performanceReport
     return
 
-  viewsManagementStop: (initial) ->
+  viewsManagementStop: ->
     @unbindViews @viewInstances
     return
 
@@ -49,8 +49,7 @@ Evrobone.AppMixins.ViewsManagement =
 
   bindView: (element, viewClass, viewName) ->
     if @canBind(element, viewClass)
-      options = _.defaults( el: element, $(element).data() )
-      view = new viewClass(options)
+      view = new viewClass(el: element)
       if viewName and not viewClass.silent
         cout 'info', "Bound view #{viewName}:", view
       @viewInstances.push view
