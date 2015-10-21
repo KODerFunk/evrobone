@@ -51,7 +51,7 @@ Evrobone.AppMixins.ViewsManagement =
     if @canBind(element, viewClass)
       options = _.defaults( el: element, $(element).data() )
       view = new viewClass(options)
-      if viewName
+      if viewName and not viewClass.silent
         cout 'info', "Bound view #{viewName}:", view
       @viewInstances.push view
       view
