@@ -7,14 +7,15 @@ Evrobone.AppMixins.ViewsManagement =
   ProtoViews: {}
   Views: {}
 
-  warnOnMultibind: true
   preventMultibind: true
+  warnOnMultibind: true
   groupBindingLog: true
 
   viewInstances: null
 
   viewsManagementInitialize: ->
     @viewInstances = []
+    @warnOnMultibind = DEBUG_MODE and @warnOnMultibind
     @on 'start', @viewsManagementStart, @
     @on 'stop', @viewsManagementStop, @
     return
@@ -31,32 +32,38 @@ Evrobone.AppMixins.ViewsManagement =
   bindViews: ($root = $('html'), checkRoot = true) ->
     if @groupBindingLog
       console?.groupCollapsed? 'bindViews on', $root
-    boundViews = []
+    allBoundViews = []
     sortedViews = _.sortBy(_.pairs(@Views), (p) -> -p[1].priority or 0)
     for [viewName, viewClass] in sortedViews when viewClass::el
-      if checkRoot
-        @_bindViews boundViews, $root.filter(viewClass::el), viewClass, viewName
-      @_bindViews boundViews, $root.find(viewClass::el), viewClass, viewName
+      $elements = $root.find(viewClass::el)
+      $elements = $root.filter(viewClass::el).add($elements) if checkRoot
+      boundViews = @_bindViews($elements, viewClass, viewName)
+      if boundViews.length > 0
+        @_boundInfo(boundViews, viewClass, viewName) if DEBUG_MODE and viewName and viewClass.silent isnt true
+        allBoundViews = allBoundViews.concat(boundViews)
     if @groupBindingLog
       console?.groupEnd?()
-    boundViews
+    allBoundViews
 
-  _bindViews: (boundViews, $elements, viewClass, viewName) ->
-    $elements.each (index, el) =>
-      if view = @bindView(el, viewClass, viewName)
-        boundViews.push view
-    return
+  _bindViews: ($elements, viewClass, viewName) ->
+    view for el in $elements.get() when view = @bindView(el, viewClass, viewName)
 
-  bindView: (element, viewClass, viewName) ->
+  bindView: (element, viewClass) ->
     if @canBind(element, viewClass)
       view = new viewClass(el: element)
-      if viewName and not viewClass.silent
-        cout 'info', "Bound view #{viewName}:", view
       @viewInstances.push view
       view
 
+  _boundInfo: (views, viewClass, viewName) ->
+    instancesInfo = 'silent instances' if viewClass.silent is 'instances'
+    if views.length > 1
+      cout 'info', @_plurMessage("Bound view #{viewName} %count% time%s%:", views.length), instancesInfo or views
+    else
+      cout 'info', "Bound view #{viewName}:", instancesInfo or views[0]
+    return
+
   canBind: (element, viewClass) ->
-    if @warnOnMultibind or @preventMultibind
+    if @preventMultibind or @warnOnMultibind
       views = @getViewsOnElement(element)
       l = views.length
       if l > 0
@@ -74,7 +81,8 @@ Evrobone.AppMixins.ViewsManagement =
       view.undelegateEvents()
       view.leave context
     @viewInstances = _.without(@viewInstances, views...)
-    cout 'info', @_plurMessage('Unbound %count% view%s%:', views.length), views
+    if DEBUG_MODE
+      cout 'info', @_plurMessage('Unbound %count% view%s%:', views.length), views
     return
 
   getViewsOnElement: (element) ->
