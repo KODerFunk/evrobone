@@ -82,7 +82,8 @@ Evrobone.AppMixins.ViewsManagement =
       view.leave context
     @viewInstances = _.without(@viewInstances, views...)
     if DEBUG_MODE
-      cout 'info', @_plurMessage('Unbound %count% view%s%:', views.length), views
+      cout 'info', @_plurMessage('Unbound %count% view%s%:', views.length),
+                   _.filter(views, (v) -> not v.constructor.silent)
     return
 
   getViewsOnElement: (element) ->
