@@ -1,10 +1,10 @@
 Evrobone.AppMixins.WindowNavigation =
 
-  changeLocation: (url, push = false) ->
+  changeLocation: (url, push = false, title = '', options) ->
     #cout '!> changeLocation', url
     historyMethod = window.history[if push then 'pushState' else 'replaceState']
     if historyMethod
-      historyMethod.call window.history, { turbolinks: Turbolinks?, url: url }, '', url
+      historyMethod.call window.history, _.extend({ turbolinks: Turbolinks?, url: url }, options), title, url
     else
       window.location.hash = url
     return

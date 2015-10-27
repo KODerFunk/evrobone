@@ -37,10 +37,11 @@ Evrobone.AppMixins.ViewsManagement =
     for [viewName, viewClass] in sortedViews when viewClass::el
       $elements = $root.find(viewClass::el)
       $elements = $root.filter(viewClass::el).add($elements) if checkRoot
-      boundViews = @_bindViews($elements, viewClass, viewName)
-      if boundViews.length > 0
-        @_boundInfo(boundViews, viewClass, viewName) if DEBUG_MODE and viewName and viewClass.silent isnt true
-        allBoundViews = allBoundViews.concat(boundViews)
+      if $elements.length
+        boundViews = @_bindViews($elements, viewClass, viewName)
+        if boundViews.length > 0
+          @_boundInfo(boundViews, viewClass, viewName) if DEBUG_MODE and viewName and viewClass.silent isnt true
+          allBoundViews = allBoundViews.concat(boundViews)
     if @groupBindingLog
       console?.groupEnd?()
     allBoundViews

@@ -22,7 +22,7 @@ window.todo = (subject, location = null, numberOrString = null) =>
     cout 'warn', "TODO: #{subject}#{if location then " ### #{location}" else ''}#{if numberOrString then (if _.isNumber(numberOrString) then ":#{numberOrString}" else " > #{numberOrString}") else ''}"
 
 window.getParams = (searchString = location.search) ->
-  q = searchString.replace(/^\?/, '').split('&')
+  q = searchString.replace(/^.*\?/, '').split('&')
   r = {}
   for e in q
     t = e.split('=')
