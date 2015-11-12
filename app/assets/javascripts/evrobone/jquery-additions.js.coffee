@@ -79,11 +79,13 @@ do ($ = jQuery) =>
 #    @css 'display', 'none'
 #    @
 
-  $.getCachedScript = (url, callback) ->
+  $.getCachedScript = (url, success, error) ->
+    {url, success, error} = url if $.isPlainObject(url)
     $.ajax
       type: 'GET'
       url: url
-      success: callback
+      success: success
+      success: error
       dataType: 'script'
       cache: true
 # coffeelint: enable=cyclomatic_complexity
