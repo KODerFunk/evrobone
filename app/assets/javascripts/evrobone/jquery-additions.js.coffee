@@ -85,7 +85,7 @@ do ($ = jQuery) =>
       type: 'GET'
       url: url
       success: success
-      success: error
+      error: error
       dataType: 'script'
       cache: true
 # coffeelint: enable=cyclomatic_complexity
