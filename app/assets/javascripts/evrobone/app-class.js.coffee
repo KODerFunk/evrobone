@@ -41,12 +41,12 @@ class Evrobone.AppClass
       cout 'info', 'Evrobone.AppClass.constructor', name, @
       @constructor.App = @
       @name = name
+      @$window = $(window)
       for mixinName in @constructor.mixinNames
         @[mixinName + 'Initialize']?()
     return
 
   start: (initial = true) ->
-    @$window = $(window) if initial
     $('body').addClass('touch-device') if @touchDevice
     @performanceReport = DEBUG_MODE if @performanceReport
     @performanceStart() if @performanceReport
