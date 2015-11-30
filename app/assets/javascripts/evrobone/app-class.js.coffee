@@ -15,6 +15,7 @@ class Evrobone.AppClass
   touchDevice: ('ontouchstart' of document.documentElement and not TEST_MODE)
   # or !!(window.DocumentTouch and document instanceof DocumentTouch)
   $window: null
+  started: false
 
   @mixinNames: null
 
@@ -51,10 +52,12 @@ class Evrobone.AppClass
     @performanceReport = DEBUG_MODE if @performanceReport
     @performanceStart() if @performanceReport
     @trigger 'start', initial
+    @started = true
     return
 
   stop: ->
     @trigger 'stop'
+    @started = false
     return
 
   performanceStartAt: null
