@@ -1,8 +1,12 @@
 Evrobone.AppMixins.WindowNavigation =
 
   popstateBusEventName: 'popstate'
+  refreshPageStorageKey: 'refreshPage:scrollTop'
 
   windowNavigationInitialize: ->
+    if scrollTop = sessionStorage?.getItem(@refreshPageStorageKey)
+      @$window.scrollTop scrollTop
+      sessionStorage.removeItem @refreshPageStorageKey
     @$window.on 'popstate', _.bind(@historyChangeHandler, @)
     return
 
@@ -17,7 +21,6 @@ Evrobone.AppMixins.WindowNavigation =
     context.stopListening @, @popstateBusEventName, callback
 
   changeLocation: (url, push = false, title = '', options) ->
-    #cout '!> changeLocation', url
     historyMethod = window.history[if push then 'pushState' else 'replaceState']
     if historyMethod
       unless /^\w+:\/\//.test(url)
@@ -28,7 +31,6 @@ Evrobone.AppMixins.WindowNavigation =
     return
 
   visit: (location) ->
-    #cout '!> visit', location
     if Turbolinks?
       Turbolinks.visit location
     else
@@ -36,21 +38,22 @@ Evrobone.AppMixins.WindowNavigation =
     return
 
   reloadPage: ->
-    #cout '!> reloadPage'
     @visit window.location
 
   refreshPage: ->
     if Turbolinks?
+      # TODO may be should use similar mech as for non-turbo variant with sessionStorage
       $document = $(document)
       scrollTop = 0
       $document.one 'page:before-unload.refreshPage', =>
         scrollTop = @$window.scrollTop()
         return
-      $document.on 'page:load.refreshPage page:restore.refreshPage', =>
+      # TODO on or one ?
+      $document.one 'page:load.refreshPage page:restore.refreshPage', =>
         @$window.scrollTop scrollTop
         return
-      Turbolinks.visit window.location
     else
-      # TODO: сделать возврат scrollTop пробросом через sessionStorage
-      window.location = window.location
+      # TODO need store url and timestamp for more strong collision protection
+      sessionStorage?.setItem @refreshPageStorageKey, @$window.scrollTop()
+    @reloadPage()
     return
