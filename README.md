@@ -1,5 +1,9 @@
+**This is no longer supported. Please consider using [Normas.js](https://github.com/evrone/normas) instead.** 
+[Consultations](https://github.com/KODerFunk)
+
 # Evrobone
 
+[![deprecated](http://badges.github.io/stability-badges/dist/deprecated.svg)](http://github.com/badges/stability-badges)
 [![Gem Version](https://badge.fury.io/rb/evrobone.svg)](http://badge.fury.io/rb/evrobone)
 
 Light-weight client-side framework based on Backbone.js for Ruby on Rails Front-end
